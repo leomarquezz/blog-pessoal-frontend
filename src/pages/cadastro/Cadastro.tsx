@@ -1,11 +1,14 @@
-import React, { ChangeEvent, useEffect, useState } from 'react'
+import { ChangeEvent, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Usuario from '../../models/Usuario'
 import { cadastrarUsuario } from '../../services/Service'
 import './Cadastro.css'
 import { toastAlerta } from '../../util/toastAlerta'
+import { RotatingLines } from 'react-loader-spinner'
 
 function Cadastro() {
+
+const [isLoading, setIsLoading] = useState(false)
 
   let navigate = useNavigate()
 
@@ -51,11 +54,15 @@ function Cadastro() {
   async function cadastrarNovoUsuario(e: ChangeEvent<HTMLFormElement>) {
     e.preventDefault()
 
+    setIsLoading(true)
+
     if (confirmaSenha === usuario.senha && usuario.senha.length >= 8) {
 
       try {
         await cadastrarUsuario(`/usuarios/cadastrar`, usuario, setUsuarioResposta)
         toastAlerta('Usuário cadastrado com sucesso', 'sucesso')
+
+        setIsLoading(false)
 
       } catch (error) {
         toastAlerta('Usuário cadastrado com sucesso', 'sucesso')
@@ -139,8 +146,15 @@ function Cadastro() {
               Cancelar
             </button>
             <button className='rounded text-white bg-indigo-400 hover:bg-indigo-900 w-1/2 py-2' type='submit'>
-              Cadastrar
-            </button>
+            {isLoading ? <RotatingLines
+            strokeColor="white"
+            strokeWidth="5"
+            animationDuration="0.75"
+            width="24"
+            visible={true}
+          /> :
+            <span>Cadastrar</span>}
+             </button>
           </div>
         </form>
       </div>
